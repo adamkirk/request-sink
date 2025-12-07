@@ -1,0 +1,18 @@
+# See: https://commitlint.js.org/guides/ci-setup.html
+name: "SECURITY: Scan"
+run-name: "SECURITY: Scan ${{ github.ref }}"
+
+on:
+  schedule:
+    - cron: "0 23 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    # If it's empty, we don't need to create a new release
+    name: "Scan"
+    uses: ./.github/workflows/_trivy_scan.yaml
+    secrets: inherit

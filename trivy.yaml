@@ -1,0 +1,28 @@
+cache:
+  # This only affects local I think, as per their docs the cache is stored 
+  # elsewhere in CI and cannot be configured by trivy.yaml
+  # http://github.com/aquasecurity/trivy-action?tab=readme-ov-file#inputs
+  dir: "./.local/trivy/cache"
+
+# Same as '--debug'
+debug: false
+
+# Same as '--insecure'
+insecure: false
+
+# Same as '--quiet'
+quiet: false
+
+# Same as '--timeout'
+timeout: 5m0s
+
+scan:
+  scanners:
+   - vuln
+   - secret
+   - misconfig
+
+  skip-dirs: []
+
+  skip-files:
+    - 'Dockerfile.dev'

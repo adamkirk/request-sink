@@ -1,0 +1,16 @@
+name: "CI: Scan"
+run-name: "CI: Scan #${{ github.event.pull_request.number }}"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+
+jobs:
+  scan:
+    # If it's empty, we don't need to create a new release
+    name: "Scan"
+    uses: ./.github/workflows/_trivy_scan.yaml
+    secrets: inherit
