@@ -1,0 +1,25 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      AIR_DEBUG: ${AIR_DEBUG:-false}
+      # See .local/docker/watch.sh
+      # This is the subcommand of the binary we wanna run
+      APP_CMD: serve
+      API_PORT: 3030
+      API_KEY: ${API_KEY}
+    working_dir: /app
+    ports:
+      - ${EXPOSE_API_PORT:-3000}:3030
+    volumes:
+      - ".:/app"
+
+  trivy-scan:
+    profiles:
+      - manual
+    image: aquasec/trivy
+    volumes: 
+      - .:/src
+    working_dir: /src
