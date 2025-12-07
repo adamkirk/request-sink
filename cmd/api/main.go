@@ -71,6 +71,12 @@ func authMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
+func startupHandler(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]any{
+		"message": "ready",
+	})
+}
+
 func handler(c echo.Context) error {
 	req := c.Request()
 
@@ -151,6 +157,7 @@ func main() {
 	e.Use(guardContentTypeHeaderMiddleware)
 
 	// Handler: just returns JSON
+	e.GET("/__/startup", startupHandler)
 	e.Any("/*", handler)
 
 	// Start server in goroutine for graceful shutdown
