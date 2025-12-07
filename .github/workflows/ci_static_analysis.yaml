@@ -1,0 +1,23 @@
+# See: https://commitlint.js.org/guides/ci-setup.html
+name: "CI: Static Analysis"
+run-name: "CI: Static Analysis [#${{ github.event.pull_request.number }}]"
+
+on: pull_request
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check_formatting:
+    name: Check Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 1.25.4
+      - run: ./scripts/fmt_check.sh

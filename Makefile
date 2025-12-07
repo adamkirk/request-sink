@@ -1,6 +1,6 @@
 DC=docker compose -f ./docker-compose.yml -p request-sink --env-file .dockerenv
 
-.PHONY: dcup dcdown prep-env exec dc tidy tail restart fmt scan-fs update-deps
+.PHONY: dcup dcdown prep-env exec dc tidy tail restart fmt scan-fs update-deps dcbuild
 
 prep-env:
 	@if [ ! -f .dockerenv ]; then \
@@ -35,3 +35,6 @@ update-deps:
 	$(DC) exec app go get -u ./...
 
 restart: dcdown dcup
+
+dcbuild:
+	$(DC) build

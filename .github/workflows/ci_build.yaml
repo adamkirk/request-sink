@@ -1,0 +1,44 @@
+# See: https://goreleaser.com/ci/actions/#workflow
+name: "CI: Build"
+run-name: "CI: Build #${{ github.event.pull_request.number }}"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: build --clean --snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # I'm not 100% sure this is actually doing anything. I don't think there are
+      # any vulnerabilities (even when testing locally) but it's hard to be sure
+      # that it's scanning them properly. Take this with a pinch of salt is all
+      # I'm saying.:
+      - name: Run Trivy vulnerability scanner in fs mode
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'fs'
+          scan-ref: './dist'
+          trivy-config: trivy.yaml
+          trivyignores: ".trivyignore"
+          # Make trivy fail when it finds a vulnerability
+          exit-code: 1

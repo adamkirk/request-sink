@@ -1,0 +1,23 @@
+# See: https://goreleaser.com/ci/actions/#workflow
+name: "_INC: Trivy Scan"
+
+on:
+  workflow_call:
+
+jobs:
+  trivy_scan:
+    name: Trivy Scan
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner in fs mode
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        trivy-config: trivy.yaml
+        trivyignores: ".trivyignore"
+        # Make trivy fail when it finds a vulnerability
+        exit-code: 1

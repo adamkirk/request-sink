@@ -1,0 +1,46 @@
+# See: https://goreleaser.com/ci/actions/#workflow
+name: "CI: Test"
+run-name: "CI: Test #${{ github.event.pull_request.number }}"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.25.4
+
+      - name: Install reporter
+        run: |
+          export GOPATH="$HOME/go/"
+          export PATH=$PATH:$GOPATH/bin
+          go install github.com/jstemmer/go-junit-report@latest
+
+      - name: Run tests
+        # Set is the default covermode, when using atomic as suggested in the docs 
+        # for the test coverage action, we get some weird bugs. I think the bugs
+        # are within the test-coverage action below. Right now we don't need to
+        # test any parallel algorihms, which is basically thge obly use-case for
+        # the atomic covermode, so stick with the default.
+        # See: https://go.dev/blog/cover#heat-maps
+        run: |
+          go test -v ./... -coverprofile=./cover.out -covermode=set -coverpkg=./...
+
+      - name: check test coverage
+        uses: vladopajic/go-test-coverage@v2
+        if: always()
+        with:
+          config: ./.testcoverage.yml
