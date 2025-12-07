@@ -1,6 +1,6 @@
 DC=docker compose -f ./docker-compose.yml -p request-sink --env-file .dockerenv
 
-.PHONY: dcup dcdown prep-env exec dc tidy tail restart fmt scan-fs update-deps dcbuild
+.PHONY: dcup dcdown prep-env exec dc tidy tail restart fmt scan-fs update-deps dcbuild lint-last-commit
 
 prep-env:
 	@if [ ! -f .dockerenv ]; then \
@@ -38,3 +38,10 @@ restart: dcdown dcup
 
 dcbuild:
 	$(DC) build
+
+npm-install:
+	npm install
+
+# Note, must run npm install first
+lint-last-commit:
+	@npx commitlint --last

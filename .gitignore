@@ -31,5 +31,8 @@ go.work.sum
 # .idea/
 # .vscode/
 
-# Inidividual setup for development
+# Individual setup for development
 .dockerenv
+
+# Only used for commitlint
+node_modules
